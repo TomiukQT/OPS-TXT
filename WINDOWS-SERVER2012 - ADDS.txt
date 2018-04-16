@@ -36,3 +36,19 @@
 		  > vlajeèka > povýšit na øadiš domény > konfigurace nasazení - pøidat novou doménovou strukturu (název = ze zadání (valenta.local))
 				> možnosti øadièe - nastavit heslo > instalovat > reboot
 		  > vlajeèka > dokonèit konfiguraci složky DHCP > pøeskoèit autorizaci
+	zkusit na clientovi pøihlásit se do domény () > reset client
+
+-nastavení uživatelù,domácích diskù, cestovních profilù a kvót
+na disku C 2 nové složky (Homes a Profiles) > na obì right click > sdílet s > urèití lidé 
+		> rozkliknout search bar a zvolit najít lidi > Zadejte názvy objektù = Authenticated Users > OK  
+		> úroveò oprávnìní u Auth. Users nastavit na ètení/zápisù > sdílet
+
+- Správce serveru > správa > uživatelé a poèítaèe služby AD > server > users (nová položka > uživatel) 
+			>nastavení jména, uživatelského jména a hesla (user1) 
+			>user1 (right click - Vlastnosti) > profil 
+			> Cesta k profilu = cesta k složce profiles + uživatelsé jméno (//SERVER/Profiles/user1)
+			> Domovská složka  > pøipojit k = cesta k složce homes + uživatelsé jméno (//SERVER/Homes/user1)
+			
+		Zkusit na clientu
+Kvóty: disk c > vlastnosti > Kvóta > zaškrtnout > povolit správu a odepøít místo na disku (mùžeme i zaškrtnou možnosti protokolování)
+				   > Omezit místo na disku a nastavit kvóty (nebo pøidìlené kvóty a najít si uživatele a nastavit kvótu jenom jemu)			
