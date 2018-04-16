@@ -1,0 +1,38 @@
+-Instalace serveru s grafickým jádrem
+
+-2 síové karty > - bridge
+		  - vnitøní sí intnet
+-nastavení jména + domény (server.valenta.local)
+-reboot
+
+-nastavení síových karet
+	1) s konektivitou = ISP/WAN
+	-opsat si ip adresu a gateway
+	-nastavit ip na statickou (opsanou) + maska + gateway + DNS (8.8.8.8,8.8.4.4)
+
+	2) bez konektivity = LAN
+		nastavit statickou IP ze zadání (10.255.13.1 / 24) a masku
+
+-instalace smìrování
+- Správce serveru > správa > pøidat role a funkce > role serveru (vzdálený pøístup) > služby rolí (zaškrtnou smìrování) > nainstalovat
+		  > nástroje > smìrování a vzdálený pøístup > "SERVER" (nakonfigurovat a povolit smìrování a ...) 
+				> pøeklad adres (NAT) > zvolit ISP/WAN (karta s konektivitou) > dokonèit
+
+-instalace DHCP
+- Správce serveru > správa > pøidat role a funkce > role serveru (server dhcp) > nainstalovat
+		  > nástroje > DHCP > server > IPv4 (Nový obor..) > nastavit rozsah (podle zadání) a masku [10.255.13.10 - 10.255.13.254; 255.255.255.0]
+				>trvání zápùjèky > smìrovaè (ip adresa serveru = 10.255.13.1) > dokonèit
+	
+
+-instalace DNS
+- Správce serveru > správa > pøidat role a funkce > role serveru (server dns) > nainstalovat¨
+		  -karta ISP > nastavit dns na 127.0.0.1 (v cmd command nslookup)
+		  > nástroje > DHCP > server > IPv4  > Obor > možnosti oboru > 006 Servery DNS > odebrat všechny, pøidat adresu serveru (10.255.13.1)
+		  > nástroje > DHCP > server (všechyn úkoly > restartovat)
+	zkusit clienta (zkontrolovat konektivitu a ip adresy a nslookup)
+
+-instalace ADDS		
+- Správce serveru > správa > pøidat role a funkce > role serveru (služba active directory domain services) > nainstalovat
+		  > vlajeèka > povýšit na øadiš domény > konfigurace nasazení - pøidat novou doménovou strukturu (název = ze zadání (valenta.local))
+				> možnosti øadièe - nastavit heslo > instalovat > reboot
+		  > vlajeèka > dokonèit konfiguraci složky DHCP > pøeskoèit autorizaci
