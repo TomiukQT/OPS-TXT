@@ -1,0 +1,81 @@
+Pøi RAID : pøi zakládání nového vPC ve VBoxu pøidat poadovanı poèet diskù.
+> nastavit jméno + doménu > nastavit sí (pøipojovat automaticky u obou karet) > nastavit heslo > vytvoøit oddíly ruènì
+- vytvoøit > standartní oddíl >pøipojit do : /boot > vybereme jen první disk > dixní velikost 200 mb > budi
+- vytvoøit > RAID oddíl > sw RAID > zvolíme disk > vyplnit všechno volné místo > opakujeme pro všechny disky
+- vytvoøit > RAID zaøízení > typ systému souborù: physical volume (LVM) > Raid úrovìò podle zadání > vybereme disky  a šiforvat (asi nemusíme,protoe pak pøi kadym bootu musíme dávat heslo)
+- vytvoøit > skupina LVM svazku > pøidat > typ systému souborù: swap > jméno lv_swap > velikost 2048 > budi
+				> pøidat > pøipojit do : / > jméno: lv_root > velikost 3000 > budi
+				> pøidat > pøipojit do : /home > jméno: lv_home > budi
+- zadat heslo pro šifrování > instalace (basic server)
+
+normální instalace: nastavit 2 karty (brigde a vnitøní sí intnet)
+> nastavit jméno + doménu > nastavit sí (pøipojovat automaticky u obou karet) > nastavit heslo > vyuít veškeré místo > instalace (basic server)
+
+nastavení karet: 
+"ifconfig" > zjisti ip eth0 > "setup" > konfigurace sítì > konfigurace zaøízení > eth0 > nastavit na statickou ip,gw ("ip route show"),dns + peerDNS+onboot
+										> eth1  > nastavit statickou ip podle zadání + masku >uloit	
+					> "service network restart"
+- mùeme nainstalaovat mc (yum install mc) nebo pracovat ve vimu
+
+kvóty (dìlat na zaèátku, mùe se to posrat)
+-soubor /etc/fstab > * u /root (1.øádek) napsat za default: ,usrquota,grpquota (ve vimu oranovı nápis)
+* [ESC] :x (uloení) > "reboot" a modlit se a se nic neposere  a ostatní nastavení u mùeme dìlat v klidu a nakonci 
+> "quotacheck -m /"
+
+
+NAT:
+-soubor /etc/sysctl.conf > net.ipv4.ip_forward = 1 
+> "sysctl -p  (restartuje slubu) -j" > "service iptables stop" (vypnutí firewall) > "iptables -L -t nat" (zobrazení tabulky IP tables)
+> "iptables -t nat -A POSTROUTING -o eth0 -s 10.255.13.0/24(podle zadání) -j MASQUERADE"
+> "iptables-save > /etc/sysconfig/iptables" (uloí aktuální konfiguraci do iptables) 
+   [> =  altgr + shift + > || altgr + 62]
+> zkouška pomocí pingu na seznam.cz
+
+DHCP:
+"yum install dhcp" 
+> "cp /usr/share/doc/dhcp-4.1.1/dhcpd.conf.sample /etc/dhcp/dhcpd.conf" > pøepsat y 
+> soubor /etc/dhcp/dhcpd.conf
+> option domain-name "valenta.local" (mùeme nastavit/zjistit v /etc/sysconfig/network)
+> option domain-name-servers 8.8.8.8, 8.8.4.4
+> odkomentovat #aurhoritative
+> subnet 10.255.13.0 netmask 255.255.255.0 {(adresa a maska sítì ze zadání)
+	range 10.255.13.10 10.255.13.254 (nastavíme rozsah)
+	option routers 10.255.13.1 
+} 
+> uloit :x
+> "service dhcpd start"
+>"setup" > systémové sluby > dhcpd zaškrtnout (spouštìní pøi startu serveru)
+- zkouška na clientech
+
+DNS:
+"yum install bind"
+>"setup" > systémové sluby > named zaškrtnout (spouštìní pøi startu serveru)
+> soubor /etc/named.conf
+> listen-on port 53{127.0.0.1; 10.255.13.1;}; (pouze pøidat ip adresu routeru ze zadání) !bacha na støedníky!
+> allow-query {localhost; 10.255.13.0/24;};   (pouze pøidat rozsah ze zadání) !bacha na støedníky!
+> uloit
+> "service named restart"
+> soubor /etc/resolv.conf > zde smazat vše a napsat jen: nameserver 127.0.0.1¨
+> setup > u eth0 vymazat DNS > "service network restart"
+> ping / "dig A seznam.cz"
+> soubor /etc/dhcp/dhcpd.conf > option domain-name-servers 10.255.13.1; (vymaeme google dns a nahradíme je adresou našeho serveru ze zadání , mùeme zde nastavit i záloní 8.8.8.8)
+> uloit > "service dhcpd restart"
+> na clientu zkusit
+
+SAMBA jako øadiè domény:
+> "yum erase samba-client samba-common" > "yum install samba4 samba4-client"
+> "setup" > systémové sluby > zaškrtnout smb a nmb
+> soubor /etc/samba/smb.conf
+	> Sekce Network Related Options
+		> workgroup = valenta.local (název domény)
+		> interfaces = lo eth1 (odkomentova a zmìnit eth0 na eth1)
+		> hosts allow = 127. 10.255.13. (odkomentovat a zadat lo a ip adresu site ze zadani)
+	> Sekce Standalone Server Options
+		> zakomentovat security a passdb backend
+	> Sekce Domain Controller Options
+		> odkomentovat security, passdb backend, domain master a domain logons
+		>odkomentovat 3x add a 3x delete
+	> Sekce Broswer Control Options
+		> odkomentovat os level = 65 
+		> odkomentovat local master = yes
+		> odkomentovat preferred master = yes

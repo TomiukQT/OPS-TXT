@@ -1,0 +1,2 @@
+- Správce serveru > správa > pøidat role a funkce > role serveru (Webovı server + server ftp) > instalovat
+> správce Internetové informaèní sluby > server > pøidat publikování ftp + nastavit
