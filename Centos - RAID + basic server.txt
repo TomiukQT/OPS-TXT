@@ -20,7 +20,8 @@ nastavení karet:
 kvóty (dìlat na zaèátku, mùže se to posrat)
 -soubor /etc/fstab > * u /root (1.øádek) napsat za default: ,usrquota,grpquota (ve vimu oranžový nápis)
 * [ESC] :x (uložení) > "reboot" a modlit se a se nic neposere  a ostatní nastavení už mùžeme dìlat v klidu až nakonci 
-> "quotacheck -m /"
+> "quotacheck -m /" > "edquota user1" (až budeme mít uživatele) > hard - maximus a soft - upozornìní (velikosti v kB)
+> "reboot"
 
 
 NAT:
@@ -68,7 +69,7 @@ SAMBA jako øadiè domény:
 > soubor /etc/samba/smb.conf
 	> Sekce Network Related Options
 		> workgroup = valenta.local (název domény)
-		> interfaces = lo eth1 (odkomentova a zmìnit eth0 na eth1)
+		> interfaces = lo eth1 (odkomentovat a zmìnit eth0 na eth1)
 		> hosts allow = 127. 10.255.13. (odkomentovat a zadat lo a ip adresu site ze zadani)
 	> Sekce Standalone Server Options
 		> zakomentovat security a passdb backend
@@ -79,3 +80,10 @@ SAMBA jako øadiè domény:
 		> odkomentovat os level = 65 
 		> odkomentovat local master = yes
 		> odkomentovat preferred master = yes
+	>Uložit a "reboot"
+> "smbpasswd -a root" (pøidání uživatele do samby) > nastavení hesla > 
+> "smbclient -U root -L localhost" (pøihlášení do samby)
+> zkusit na clientovi
+	Pøidání dalšího uživatele: "useradd user1"
+				   "passwd user1"
+				   "smbpasswd -a user1"
